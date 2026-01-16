@@ -39,6 +39,16 @@ forecast_log <- forecast(model, h = 24)
 # Convert back to original scale
 forecast_final <- exp(forecast_log$mean)
 
+#accuracy checking
+train <- window(ts_data, end = c(1959, 12))
+test  <- window(ts_data, start = c(1960, 1))
+
+model <- auto.arima(log(train))
+forecast_log <- forecast(model, h = length(test))
+forecast_final <- exp(forecast_log$mean)
+
+accuracy(forecast_final, test)
+
 # Plot forecast (log scale)
 autoplot(forecast_log) +
   labs(title = "Log-ARIMA Forecast for Air Passengers", x = "Year", y = "log(Passengers)") +
@@ -47,3 +57,4 @@ autoplot(forecast_log) +
 # Plot back-transformed forecast
 ts.plot(ts_data, forecast_final, log = "y", lty = c(1, 3), col = c("black", "red"))
 legend("topleft", legend = c("Actual", "Forecast"), col = c("black", "red"), lty = c(1, 3))
+
